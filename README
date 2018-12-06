@@ -1,0 +1,50 @@
+This is A SOCKET PROJECT.
+AUTHOR:BOYUAN WANG
+
+In this project, l created one client, one monitor, one aws server and three backend servers.
+Then l connected aws server with three backend servers through UDP protocol.
+Also l connected client with aws server using TCP, the same way between aws server and monitor.
+
+During running, the aws starts before the monitor.
+step 1. The client sends data with 3 parameters to the aws server.
+step 2. The aws server sends the linkid to server A and B to check if it exists in their databases.
+step 3. The server A and B send back the searching results.
+step 4. The aws server decides whether to send the data futrher to server C.
+        if one of A or B exists, the aws sends the data to C.(including length,velocity,bandwidth and filesize)
+        and the server C returns the calculation results(Tp and Tt).
+step 5. The aws sends back the result to the client and monitor both.
+finally the client receives the result and becomes offline but all others are still running.
+
+
+functions of each part:
+aws  : setup the TCP connection
+       receive the parameters from the client
+       send to A and B through UDP
+       receive from A and B
+       send to C and receive the result from C if necessary
+       send back the results to client and monitor
+
+serverA & B: receive the linkid from aws server 
+             search if it exists
+             if exists return back the bandwidth,length and velocity
+             else return negative
+
+server C: receive the parameters(filesize, bandwidth,length and velocity) from aws server
+          calculate and return back the Tp and Tt
+
+monitor:  receive the parameters(linkid, filesize and power) from aws server
+          receive the final search or calculation result from aws server
+
+client: send the parameters(linkid, filesize and power) to aws server
+        receive the final search or calculation result from aws server
+
+
+reused code like:
+"getaddrinfo(..,..,&hints,&servinfo);"
+and for loop like
+"for(p = s;p!= NULL;p = p->ai_next)"
+Used by referrence from beej website. "http://beej.us/guide/bgnet/examples/client.c"
+It is used to find a part of address for socket to set up TCP or UDP in order to make socket.
+
+
+
